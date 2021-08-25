@@ -125,7 +125,6 @@ router.post('/', async(req, res) => {
 //      - Em caso de sucesso do INSERT, colocar uma mensagem feliz
 //      - Em caso de erro do INSERT, colocar mensagem vermelhinha
 
-
 router.delete('/:id', async(req, res) => {
   const personId = req.params.id;
 
