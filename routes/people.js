@@ -89,6 +89,33 @@ router.get('/new/', (req, res) => {
 //      - Em caso de sucesso do INSERT, colocar uma mensagem feliz
 //      - Em caso de erro do INSERT, colocar mensagem vermelhinha
 
+// try {
+//   personName = ;
+//   const [result] = await db.execute('INSERT INTO person (id, name) VALUES (NULL, ?)', [req.params.name]);
+//   console.log("Pessoa inserida: ${result.affectedRows} com id ${result.inserId}");
+// } catch {
+//   console.log("Deu ruim no insert")
+// }
+
+router.post('/', async(req, res) => {
+  const personName = req.body.name;
+
+  if (!personName) {
+    req.flash('error', 'Nome vazio!');
+    res.redirect('/people');
+    return;
+  }
+
+  try {
+      const [result] = await db.execute('INSERT INTO person (id, name, alive) VALUES (NULL, ?, TRUE)', [personName]);
+      console.log("Pessoa inserida: ${result.affectedRows} com id ${result.inserId}");
+      req.flash('success','Inserido!');
+  } catch {
+    req.flash('error', 'Deu ruim!');
+  }
+  res.redirect('/people');
+});
+
 
 /* DELETE uma pessoa */
 // Exercício 2: IMPLEMENTAR AQUI
@@ -98,5 +125,23 @@ router.get('/new/', (req, res) => {
 //      - Em caso de sucesso do INSERT, colocar uma mensagem feliz
 //      - Em caso de erro do INSERT, colocar mensagem vermelhinha
 
+
+router.delete('/:id', async(req, res) => {
+  const personId = req.params.id;
+
+  if (!personId) {
+    req.flash('error', 'Problema em achar o id!');
+    res.redirect('/');
+    return;
+  }
+
+  try {
+    const [result] = await db.execute('DELETE FROM person WHERE id=?', [personId]);
+    req.flash('success','Excluido!');
+  } catch {
+    req.flash('error', 'Deu ruim!');
+  }
+  res.redirect('back');
+});
 
 export default router
