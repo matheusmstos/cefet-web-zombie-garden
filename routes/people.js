@@ -26,11 +26,27 @@ router.get('/', async (req, res, next) => {
     //   - por exemplo, assim que uma pessoa é excluída, uma mensagem de
     //     sucesso pode ser mostrada
     // - error: idem para mensagem de erro
-    res.render('list-people', {
-      people,
-      success: req.flash('success'),
-      error: req.flash('error')
+    
+    res.format({
+      html: () => {
+        if(people.length > 0){
+          res.render('list-people', {
+            people,
+            success: req.flash('success'),
+            error: req.flash('error') })
+        } else {
+          throw new Error('html - Deu ruim na lista. Tente novamente de noite.')
+        }
+      },
+      json: () => {
+        if(people.length > 0){
+          req.json({people})
+        }else {
+          res.status(404).send({error: 'json - Deu ruim na lista. Tente novamente de noite.'})
+        }
+      }
     })
+
 
   } catch (error) {
     console.error(error)
@@ -88,14 +104,6 @@ router.get('/new/', (req, res) => {
 //   2. Redirecionar para a rota de listagem de pessoas
 //      - Em caso de sucesso do INSERT, colocar uma mensagem feliz
 //      - Em caso de erro do INSERT, colocar mensagem vermelhinha
-
-// try {
-//   personName = ;
-//   const [result] = await db.execute('INSERT INTO person (id, name) VALUES (NULL, ?)', [req.params.name]);
-//   console.log("Pessoa inserida: ${result.affectedRows} com id ${result.inserId}");
-// } catch {
-//   console.log("Deu ruim no insert")
-// }
 
 router.post('/', async(req, res) => {
   const personName = req.body.name;
